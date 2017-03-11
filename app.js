@@ -4,11 +4,12 @@
 
 //single state object
 var state = {
-	genre: "",
-	weather: "",
+	selectedGenre: "",
+	selectedWeather: "",
 	userLatitude: 0,
 	userLongitude: 0,
-	locationAvailable: false
+	locationAvailable: false,
+	userWeatherCondition: ""
 };
 
 //Event listener for form submit
@@ -17,28 +18,34 @@ $("form").submit(function(e){
 	var genre = $(this).find(".js-genre").val();
 	var weather = $(this).find(".js-weather").val();
 	updateState(genre, weather);
-	if (state.weather == "mycurrent"){
-		getUserLocation(state);
+	if (state.selectedWeather == "mycurrent"){
+		getUserLocation(state, function(){
+			displayState(state);
+		});
 	}
 
 })
 
 //State modification functions
 function updateState(genre, weather){
-	state.genre = genre;
-	state.weather = weather;
+	state.selectedGenre = genre;
+	state.selectedWeather = weather;
 }
 
-function getUserLocation(state){
+function getUserLocation(state, callback){
 	if ("geolocation" in navigator){
 		state.locationAvailable = true;
 		navigator.geolocation.getCurrentPosition(function(position){
 			state.userLatitude = position.coords.latitude;
 			state.userLongitude = position.coords.longitude;
-			console.log(state);
+			callback(state);
 		});
 	}
 	else{
 		state.locationAvailable = false;
 	}
+}
+
+function displayState(state){
+	console.log(state);
 }
